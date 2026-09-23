@@ -24,7 +24,8 @@ st.markdown("""
 /* Hide Streamlit Menu & Footer */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
-header {visibility:hidden;}
+header {background: transparent !important;} 
+
 
 .main-title{
     font-size:48px;
