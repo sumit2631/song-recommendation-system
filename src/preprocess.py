@@ -10,7 +10,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 # ----------------------------------
 # Logging Configuration
@@ -81,32 +80,9 @@ df["cleaned_text"] = df["text"].apply(preprocess_text)
 logging.info("✅ Text cleaning completed.")
 
 # ----------------------------------
-# TF-IDF Vectorization
-# ----------------------------------
-logging.info("🔠 Creating TF-IDF matrix...")
-
-tfidf = TfidfVectorizer(max_features=10000)
-
-tfidf_matrix = tfidf.fit_transform(df["cleaned_text"])
-
-logging.info("✅ TF-IDF matrix shape: %s", tfidf_matrix.shape)
-
-# ----------------------------------
-# Cosine Similarity
-# ----------------------------------
-logging.info("📐 Computing cosine similarity...")
-
-cosine_sim = cosine_similarity(tfidf_matrix)
-
-logging.info("✅ Cosine similarity matrix created.")
-
-# ----------------------------------
-# Save Files
+# Save Files (Only saving the lightweight text dataset)
 # ----------------------------------
 joblib.dump(df, "df_cleaned.pkl")
-joblib.dump(tfidf_matrix, "tfidf_matrix.pkl")
-joblib.dump(cosine_sim, "cosine_sim.pkl")
 
-logging.info("💾 Files saved successfully.")
-
+logging.info("💾 Lightweight dataset saved successfully. (Massive similarity matrix skipped!)")
 logging.info("🎉 Preprocessing completed successfully.")
