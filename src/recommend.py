@@ -1,7 +1,7 @@
-# recommend.py
 import joblib
 import logging
 from pathlib import Path
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # -------------------------------------------------
@@ -22,18 +22,23 @@ logging.basicConfig(
 )
 
 # -------------------------------------------------
-# Load Data
+# Load Data & Generate TF-IDF Vector On-The-Fly
 # -------------------------------------------------
 logging.info("🔁 Loading data...")
 
 try:
+    # Load the lightweight text file from GitHub
     df = joblib.load(BASE_DIR / "df_cleaned.pkl")
-    tfidf_matrix = joblib.load(BASE_DIR / "tfidf_matrix.pkl")
-
-    logging.info("✅ Data loaded successfully.")
+    logging.info("✅ Dataset loaded successfully.")
+    
+    # Rebuild the matrix instantly in memory so we don't need a heavy file
+    logging.info("🔠 Generating TF-IDF matrix dynamically...")
+    tfidf = TfidfVectorizer(max_features=10000)
+    tfidf_matrix = tfidf.fit_transform(df["cleaned_text"])
+    logging.info("✅ TF-IDF matrix generated successfully.")
 
 except Exception as e:
-    logging.error("❌ Failed to load required files: %s", str(e))
+    logging.error("❌ Failed to initialize recommendation data: %s", str(e))
     raise
 
 
@@ -53,7 +58,7 @@ def recommend_songs(song_name, top_n=5):
 
     idx = idx[0]
 
-    # Calculate similarity only for the selected song
+    # Calculate similarity only for the selected song against all others
     similarity_scores = cosine_similarity(
         tfidf_matrix[idx:idx + 1],
         tfidf_matrix
